@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="A private, installless rhythm for movement, eye comfort, water, and longer breaks."
+    >
+    <meta name="color-scheme" content="light dark">
+    <meta id="themeColor" name="theme-color" content="#285848">
+    <title>Vulture Lite</title>
+    <link id="favicon" rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="stylesheet" href="./styles.css">
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body data-state="stopped">
+    <a class="skip-link" href="#main">Skip to the timer</a>
+
+    <svg class="svg-sprite" aria-hidden="true">
+      <symbol id="icon-bell" viewBox="0 0 24 24">
+        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
+        <path d="M10 21h4"/>
+      </symbol>
+      <symbol id="icon-check" viewBox="0 0 24 24">
+        <path d="m5 12 4 4L19 6"/>
+      </symbol>
+      <symbol id="icon-clock" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M12 7v5l3 2"/>
+      </symbol>
+      <symbol id="icon-cup" viewBox="0 0 24 24">
+        <path d="M5 8h11v6a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/>
+        <path d="M16 10h2a3 3 0 0 1 0 6h-2"/>
+        <path d="M8 3v2M12 3v2"/>
+      </symbol>
+      <symbol id="icon-eye" viewBox="0 0 24 24">
+        <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/>
+        <circle cx="12" cy="12" r="2.5"/>
+      </symbol>
+      <symbol id="icon-lock" viewBox="0 0 24 24">
+        <rect x="5" y="10" width="14" height="11" rx="2"/>
+        <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+      </symbol>
+      <symbol id="icon-move" viewBox="0 0 24 24">
+        <path d="M8 7h8M8 17h8M5 10l-3 2 3 2M19 10l3 2-3 2"/>
+        <path d="M12 5v14"/>
+      </symbol>
+      <symbol id="icon-pause" viewBox="0 0 24 24">
+        <path d="M8 5v14M16 5v14"/>
+      </symbol>
+      <symbol id="icon-play" viewBox="0 0 24 24">
+        <path d="m8 5 11 7-11 7z"/>
+      </symbol>
+      <symbol id="icon-science" viewBox="0 0 24 24">
+        <path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/>
+        <path d="M7.5 15h9"/>
+      </symbol>
+      <symbol id="icon-seated" viewBox="0 0 24 24">
+        <circle cx="10" cy="4" r="2"/>
+        <path d="M9 7v6h6l2 7M9 10H5v7h9M5 20v-3"/>
+      </symbol>
+      <symbol id="icon-settings" viewBox="0 0 24 24">
+        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.09a2 2 0 0 1 1 1.74v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </symbol>
+      <symbol id="icon-stand" viewBox="0 0 24 24">
+        <circle cx="12" cy="4" r="2"/>
+        <path d="M12 7v6M8 10l4 3 4-3M12 13l-3 8M12 13l4 8"/>
+      </symbol>
+      <symbol id="icon-water" viewBox="0 0 24 24">
+        <path d="M12 2S5 10 5 15a7 7 0 0 0 14 0c0-5-7-13-7-13Z"/>
+        <path d="M9 17c.8 1 1.8 1.5 3 1.5"/>
+      </symbol>
+      <symbol id="icon-walk" viewBox="0 0 24 24">
+        <circle cx="14" cy="4" r="2"/>
+        <path d="m12 8-2 5 4 2 2 6M10 13l-4 7M12 8l4 3 3-1"/>
+      </symbol>
+      <symbol id="icon-x" viewBox="0 0 24 24">
+        <path d="m6 6 12 12M18 6 6 18"/>
+      </symbol>
+    </svg>
+
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Vulture Lite home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64">
+            <rect width="64" height="64" rx="18"/>
+            <path d="M13 17h10l9 25 9-25h10L36.5 51h-9z"/>
+          </svg>
+        </span>
+        <span>
+          <strong>Vulture Lite</strong>
+          <small>quietly keeping time</small>
+        </span>
+      </a>
+      <nav class="top-actions" aria-label="App">
+        <button class="text-button" id="evidenceButton" type="button">
+          <svg aria-hidden="true"><use href="#icon-science"></use></svg>
+          <span>Why it works</span>
+        </button>
+        <button class="icon-button" id="settingsButton" type="button" aria-label="Open settings">
+          <svg aria-hidden="true"><use href="#icon-settings"></use></svg>
+        </button>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="browser-note" aria-labelledby="browserNoteTitle">
+        <span class="note-icon" aria-hidden="true">
+          <svg><use href="#icon-bell"></use></svg>
+        </span>
+        <div>
+          <h2 id="browserNoteTitle">Keep this tab open</h2>
+          <p id="browserNoteText">
+            The favicon and page title will change when a moment is near.
+          </p>
+        </div>
+        <button class="small-button" id="notificationButton" type="button">
+          Enable notifications
+        </button>
+      </section>
+
+      <div class="dashboard">
+        <section class="timer-panel" aria-labelledby="nextHeading">
+          <div class="timer-heading">
+            <p class="eyebrow" id="stateEyebrow">Your rhythm is ready</p>
+            <h1 id="nextHeading">
+              <span id="nextActivity">Begin when it suits you.</span>
+            </h1>
+            <p id="nextDetail">
+              A balanced plan is already prepared, and every setting is yours.
+            </p>
+          </div>
+
+          <div class="time-instrument" aria-describedby="countdownLabel">
+            <svg class="progress-ring" viewBox="0 0 240 240" aria-hidden="true">
+              <circle class="ring-track" cx="120" cy="120" r="104"/>
+              <circle
+                class="ring-value"
+                id="progressRing"
+                cx="120"
+                cy="120"
+                r="104"
+                pathLength="100"
+              />
+            </svg>
+            <div class="countdown-copy">
+              <span class="countdown-overline">Next nudge</span>
+              <time id="countdown" datetime="PT0S">--:--</time>
+              <span id="countdownLabel">until your plan starts</span>
+            </div>
+          </div>
+
+          <div class="timer-actions">
+            <button class="primary-button" id="primaryAction" type="button">
+              <svg aria-hidden="true"><use href="#icon-play"></use></svg>
+              <span>Start my rhythm</span>
+            </button>
+            <button class="secondary-button" id="pauseButton" type="button" hidden>
+              <svg aria-hidden="true"><use href="#icon-pause"></use></svg>
+              <span>Pause 30 min</span>
+            </button>
+          </div>
+
+          <p class="instrument-status" id="instrumentStatus">
+            <span class="status-dot" aria-hidden="true"></span>
+            Nothing leaves this browser.
+          </p>
+        </section>
+
+        <aside class="flight-plan" aria-labelledby="planHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Today’s flight plan</p>
+              <h2 id="planHeading">Four quiet signals</h2>
+            </div>
+            <button class="text-button compact" id="editPlanButton" type="button">
+              Tune
+            </button>
+          </div>
+          <ol class="plan-list" id="planList"></ol>
+          <p class="plan-note">
+            Reminders arriving within 90 seconds travel together.
+          </p>
+          <div class="plan-day-note">
+            <p>
+              <strong id="planHistoryCount">0</strong>
+              moments ·
+              <strong id="planHistoryMinutes">0</strong>
+              min today
+            </p>
+            <button class="text-button compact" id="planClearTodayButton" type="button">
+              Clear
+            </button>
+          </div>
+        </aside>
+      </div>
+
+      <div class="support-grid">
+        <section class="today-panel" aria-labelledby="todayHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Local day note</p>
+              <h2 id="todayHeading">No score. Just a trace.</h2>
+            </div>
+            <button class="text-button compact" id="clearTodayButton" type="button">
+              Clear today
+            </button>
+          </div>
+          <div class="day-summary">
+            <p>
+              <strong id="historyCount">0</strong>
+              <span>moments taken</span>
+            </p>
+            <span class="summary-rule" aria-hidden="true"></span>
+            <p>
+              <strong id="historyMinutes">0</strong>
+              <span>minutes away</span>
+            </p>
+          </div>
+          <ol class="recent-moments" id="recentMoments">
+            <li class="empty-moment">
+              Your first completed break will appear here, on this device only.
+            </li>
+          </ol>
+        </section>
+
+        <section class="quick-panel" aria-labelledby="quickHeading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">No need to wait</p>
+              <h2 id="quickHeading">Take a moment now</h2>
+            </div>
+          </div>
+          <div class="quick-grid">
+            <button class="quick-action" type="button" data-quick="eyes">
+              <svg aria-hidden="true"><use href="#icon-eye"></use></svg>
+              <span><strong>Look far</strong><small>20 seconds</small></span>
+            </button>
+            <button class="quick-action" type="button" data-quick="stand">
+              <svg aria-hidden="true"><use href="#icon-stand"></use></svg>
+              <span><strong>Stand + shift</strong><small>2 minutes</small></span>
+            </button>
+            <button class="quick-action" type="button" data-quick="walk">
+              <svg aria-hidden="true"><use href="#icon-walk"></use></svg>
+              <span><strong>Walk around</strong><small>5 minutes</small></span>
+            </button>
+            <button class="quick-action" type="button" data-quick="water">
+              <svg aria-hidden="true"><use href="#icon-water"></use></svg>
+              <span><strong>Get water</strong><small>step away</small></span>
+            </button>
+            <button class="quick-action" type="button" data-quick="exercise">
+              <svg aria-hidden="true"><use href="#icon-move"></use></svg>
+              <span><strong>Guided move</strong><small>choose for me</small></span>
+            </button>
+            <button class="quick-action" type="button" data-quick="coffee">
+              <svg aria-hidden="true"><use href="#icon-cup"></use></svg>
+              <span><strong>Tea or coffee</strong><small>5 minutes</small></span>
+            </button>
+          </div>
+          <button class="library-link" id="exerciseLibraryButton" type="button">
+            Browse all seated and standing movements
+            <span aria-hidden="true">→</span>
+          </button>
+        </section>
+      </div>
+
+      <section class="privacy-strip" aria-label="Privacy">
+        <svg aria-hidden="true"><use href="#icon-lock"></use></svg>
+        <p>
+          <strong>No account. No camera. No analytics.</strong>
+          Settings and today’s history stay in this browser.
+        </p>
+        <button class="text-button compact" id="exportButton" type="button">
+          Export settings
+        </button>
+      </section>
+    </main>
+
+    <footer>
+      <p>Vulture Lite is a reminder, not medical advice.</p>
+      <button class="text-button compact" id="footerEvidenceButton" type="button">
+        Evidence &amp; safety
+      </button>
+    </footer>
+
+    <button class="mobile-quick-button" id="mobileQuickButton" type="button">
+      <svg aria-hidden="true"><use href="#icon-play"></use></svg>
+      <span>Take a moment</span>
+    </button>
+
+    <dialog class="welcome-dialog" id="onboardingDialog" aria-labelledby="welcomeTitle">
+      <div class="welcome-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64">
+          <rect width="64" height="64" rx="18"/>
+          <path d="M13 17h10l9 25 9-25h10L36.5 51h-9z"/>
+        </svg>
+      </div>
+      <p class="eyebrow">A quiet workday companion</p>
+      <h2 id="welcomeTitle">Small changes, held lightly.</h2>
+      <p class="dialog-lede">
+        Vulture Lite keeps time for movement, your eyes, water, and a longer
+        step away. It never watches you.
+      </p>
+      <ul class="balanced-plan">
+        <li><span>20 min</span> look beyond the screen</li>
+        <li><span>30 min</span> move or change position</li>
+        <li><span>60 min</span> optional water cue</li>
+        <li><span>90 min</span> longer reset</li>
+      </ul>
+      <p class="browser-truth">
+        Keep this page open for reminders. Fully closing the browser ends
+        static-site scheduling.
+      </p>
+      <div class="dialog-actions stacked-mobile">
+        <button class="primary-button" id="onboardingNotify" type="button">
+          Start with notifications
+        </button>
+        <button class="secondary-button" id="onboardingQuiet" type="button">
+          Start quietly
+        </button>
+      </div>
+      <button class="text-button centered" id="onboardingCustomize" type="button">
+        Customize first
+      </button>
+    </dialog>
+
+    <dialog class="sheet-dialog settings-dialog" id="settingsDialog" aria-labelledby="settingsTitle">
+      <div class="sheet-shell">
+        <header class="sheet-header">
+          <div>
+            <p class="eyebrow">Saved on this device</p>
+            <h2 id="settingsTitle">Tune your rhythm</h2>
+          </div>
+          <button class="icon-button" type="button" data-close="settingsDialog" aria-label="Close settings">
+            <svg aria-hidden="true"><use href="#icon-x"></use></svg>
+          </button>
+        </header>
+
+        <form id="settingsForm">
+          <section class="settings-section" aria-labelledby="reminderSettingsHeading">
+            <div class="settings-intro">
+              <h3 id="reminderSettingsHeading">Reminders</h3>
+              <p>Defaults are starting points, not medical thresholds.</p>
+            </div>
+
+            <fieldset class="reminder-editor">
+              <legend class="sr-only">Eye comfort reminder</legend>
+              <div class="reminder-editor-heading">
+                <span class="tone-icon eye" aria-hidden="true">
+                  <svg><use href="#icon-eye"></use></svg>
+                </span>
+                <div>
+                  <strong>Eye comfort</strong>
+                  <small>Distance view is always included.</small>
+                </div>
+                <label class="switch">
+                  <span class="sr-only">Enable eye comfort reminders</span>
+                  <input id="eyesEnabled" type="checkbox">
+                  <span aria-hidden="true"></span>
+                </label>
+              </div>
+              <div class="field-row">
+                <label>
+                  Every
+                  <span class="number-field">
+                    <input id="eyesInterval" type="number" min="10" max="90" inputmode="numeric">
+                    <span>min</span>
+                  </span>
+                </label>
+                <label>
+                  For
+                  <span class="number-field">
+                    <input id="eyesDuration" type="number" min="10" max="180" inputmode="numeric">
+                    <span>sec</span>
+                  </span>
+                </label>
+              </div>
+              <div class="choice-row">
+                <span>Also rotate in</span>
+                <label><input type="checkbox" name="eyesActivity" value="blink"> slow blinks</label>
+                <label><input type="checkbox" name="eyesActivity" value="eyes-closed"> closed-eye rest</label>
+              </div>
+            </fieldset>
+
+            <fieldset class="reminder-editor">
+              <legend class="sr-only">Movement reminder</legend>
+              <div class="reminder-editor-heading">
+                <span class="tone-icon move" aria-hidden="true">
+                  <svg><use href="#icon-move"></use></svg>
+                </span>
+                <div>
+                  <strong>Move</strong>
+                  <small>Favor variation over a “perfect” posture.</small>
+                </div>
+                <label class="switch">
+                  <span class="sr-only">Enable movement reminders</span>
+                  <input id="movementEnabled" type="checkbox">
+                  <span aria-hidden="true"></span>
+                </label>
+              </div>
+              <div class="field-row">
+                <label>
+                  Every
+                  <span class="number-field">
+                    <input id="movementInterval" type="number" min="15" max="180" inputmode="numeric">
+                    <span>min</span>
+                  </span>
+                </label>
+                <label>
+                  Suggest
+                  <span class="number-field">
+                    <input id="movementDuration" type="number" min="1" max="10" inputmode="numeric">
+                    <span>min</span>
+                  </span>
+                </label>
+              </div>
+              <div class="choice-row wrap">
+                <span>Rotate between</span>
+                <label><input type="checkbox" name="movementActivity" value="position"> position</label>
+                <label><input type="checkbox" name="movementActivity" value="stand"> standing</label>
+                <label><input type="checkbox" name="movementActivity" value="walk"> walking</label>
+                <label><input type="checkbox" name="movementActivity" value="exercise"> guided moves</label>
+              </div>
+            </fieldset>
+
+            <fieldset class="reminder-editor">
+              <legend class="sr-only">Water reminder</legend>
+              <div class="reminder-editor-heading">
+                <span class="tone-icon water" aria-hidden="true">
+                  <svg><use href="#icon-water"></use></svg>
+                </span>
+                <div>
+                  <strong>Water</strong>
+                  <small>A neutral cue, never an intake target.</small>
+                </div>
+                <label class="switch">
+                  <span class="sr-only">Enable water reminders</span>
+                  <input id="hydrationEnabled" type="checkbox">
+                  <span aria-hidden="true"></span>
+                </label>
+              </div>
+              <div class="field-row">
+                <label>
+                  Every
+                  <span class="number-field">
+                    <input id="hydrationInterval" type="number" min="20" max="240" inputmode="numeric">
+                    <span>min</span>
+                  </span>
+                </label>
+                <label>
+                  For
+                  <span class="number-field">
+                    <input id="hydrationDuration" type="number" min="15" max="180" inputmode="numeric">
+                    <span>sec</span>
+                  </span>
+                </label>
+              </div>
+            </fieldset>
+
+            <fieldset class="reminder-editor">
+              <legend class="sr-only">Longer reset reminder</legend>
+              <div class="reminder-editor-heading">
+                <span class="tone-icon reset" aria-hidden="true">
+                  <svg><use href="#icon-cup"></use></svg>
+                </span>
+                <div>
+                  <strong>Longer reset</strong>
+                  <small>Walking matters more than the drink.</small>
+                </div>
+                <label class="switch">
+                  <span class="sr-only">Enable longer reset reminders</span>
+                  <input id="resetEnabled" type="checkbox">
+                  <span aria-hidden="true"></span>
+                </label>
+              </div>
+              <div class="field-row">
+                <label>
+                  Every
+                  <span class="number-field">
+                    <input id="resetInterval" type="number" min="30" max="240" inputmode="numeric">
+                    <span>min</span>
+                  </span>
+                </label>
+                <label>
+                  Suggest
+                  <span class="number-field">
+                    <input id="resetDuration" type="number" min="1" max="15" inputmode="numeric">
+                    <span>min</span>
+                  </span>
+                </label>
+              </div>
+              <div class="choice-row wrap">
+                <span>Rotate between</span>
+                <label><input type="checkbox" name="resetActivity" value="coffee"> tea / coffee</label>
+                <label><input type="checkbox" name="resetActivity" value="walk"> walking</label>
+                <label><input type="checkbox" name="resetActivity" value="exercise"> guided moves</label>
+              </div>
+            </fieldset>
+          </section>
+
+          <section class="settings-section" aria-labelledby="workdayHeading">
+            <div class="settings-intro">
+              <h3 id="workdayHeading">Workday</h3>
+              <p>Outside these hours the schedule rests automatically.</p>
+            </div>
+            <label class="setting-line">
+              <span>
+                <strong>Use quiet work hours</strong>
+                <small>Leave off for an always-available rhythm.</small>
+              </span>
+              <span class="switch">
+                <input id="scheduleEnabled" type="checkbox">
+                <span aria-hidden="true"></span>
+              </span>
+            </label>
+            <div class="time-fields">
+              <label>Start <input id="workStart" type="time"></label>
+              <label>End <input id="workEnd" type="time"></label>
+            </div>
+            <fieldset class="day-picker">
+              <legend>Active days</legend>
+              <label><input type="checkbox" name="workday" value="1"><span>Mon</span></label>
+              <label><input type="checkbox" name="workday" value="2"><span>Tue</span></label>
+              <label><input type="checkbox" name="workday" value="3"><span>Wed</span></label>
+              <label><input type="checkbox" name="workday" value="4"><span>Thu</span></label>
+              <label><input type="checkbox" name="workday" value="5"><span>Fri</span></label>
+              <label><input type="checkbox" name="workday" value="6"><span>Sat</span></label>
+              <label><input type="checkbox" name="workday" value="0"><span>Sun</span></label>
+            </fieldset>
+          </section>
+
+          <section class="settings-section" aria-labelledby="signalsHeading">
+            <div class="settings-intro">
+              <h3 id="signalsHeading">Signals</h3>
+              <p>Notifications work only while Vulture Lite remains open.</p>
+            </div>
+            <div class="notification-setting">
+              <div>
+                <strong>Browser notifications</strong>
+                <small id="settingsNotificationStatus">Not enabled yet.</small>
+              </div>
+              <button class="small-button" id="settingsNotificationButton" type="button">
+                Enable
+              </button>
+            </div>
+            <label class="setting-line">
+              <span>
+                <strong>Gentle chime</strong>
+                <small>Off by default; previewed when enabled.</small>
+              </span>
+              <span class="switch">
+                <input id="soundEnabled" type="checkbox">
+                <span aria-hidden="true"></span>
+              </span>
+            </label>
+          </section>
+
+          <section class="settings-section data-section" aria-labelledby="dataHeading">
+            <div class="settings-intro">
+              <h3 id="dataHeading">Your browser data</h3>
+              <p>No sync means you remain in control of the only copy.</p>
+            </div>
+            <div class="data-actions">
+              <button class="secondary-button" id="settingsExportButton" type="button">
+                Export settings
+              </button>
+              <button class="danger-button" id="clearDataButton" type="button">
+                Clear all local data
+              </button>
+            </div>
+          </section>
+        </form>
+
+        <footer class="sheet-footer">
+          <span id="settingsSaved" role="status">Saved on this device</span>
+          <button class="primary-button" type="button" data-close="settingsDialog">
+            Done
+          </button>
+        </footer>
+      </div>
+    </dialog>
+
+    <dialog class="sheet-dialog evidence-dialog" id="evidenceDialog" aria-labelledby="evidenceTitle">
+      <article class="sheet-shell">
+        <header class="sheet-header">
+          <div>
+            <p class="eyebrow">Evidence, with its edges visible</p>
+            <h2 id="evidenceTitle">Why these reminders exist</h2>
+          </div>
+          <button class="icon-button" type="button" data-close="evidenceDialog" aria-label="Close evidence">
+            <svg aria-hidden="true"><use href="#icon-x"></use></svg>
+          </button>
+        </header>
+
+        <div class="evidence-body">
+          <p class="evidence-lede">
+            The strongest case is simple: prolonged sitting is worth
+            interrupting, and a short walk generally has stronger acute
+            evidence than standing still. The exact perfect schedule is not
+            known.
+          </p>
+
+          <section>
+            <span class="evidence-strength">Supported</span>
+            <h3>Move and vary the task</h3>
+            <p>
+              WHO recommends limiting sedentary time and replacing some of it
+              with activity of any intensity. HSE and OSHA recommend short,
+              frequent changes of activity during computer work. Experimental
+              reviews show favorable acute glucose and insulin responses when
+              sitting is interrupted with activity.
+            </p>
+          </section>
+
+          <section>
+            <span class="evidence-strength">Useful, nuanced</span>
+            <h3>Micro-breaks and fatigue</h3>
+            <p>
+              A 2022 meta-analysis found that breaks under ten minutes improved
+              vigor and reduced fatigue on average. Performance varied with the
+              task and break length, so Vulture Lite does not promise a
+              productivity boost.
+            </p>
+          </section>
+
+          <section>
+            <span class="evidence-strength cautious">Guidance, not a treatment</span>
+            <h3>Eyes, water, and coffee</h3>
+            <p>
+              The 20-20-20 rule is widely recommended, but one small controlled
+              study found no benefit from its exact 20-second timing during a
+              short task. Water needs vary. Coffee is offered as a reason to
+              step away, not as a caffeine recommendation.
+            </p>
+          </section>
+
+          <section class="source-list">
+            <h3>Primary reading</h3>
+            <a href="https://www.who.int/publications/i/item/9789240015128" target="_blank" rel="noopener noreferrer">
+              WHO physical activity and sedentary behaviour guidelines
+            </a>
+            <a href="https://www.hse.gov.uk/msd/dse/work-routine.htm" target="_blank" rel="noopener noreferrer">
+              HSE work routine and breaks
+            </a>
+            <a href="https://www.osha.gov/etools/computer-workstations/work-process" target="_blank" rel="noopener noreferrer">
+              OSHA computer workstation work process
+            </a>
+            <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6985064/" target="_blank" rel="noopener noreferrer">
+              Physical activity break systematic review
+            </a>
+            <a href="https://doi.org/10.1371/journal.pone.0272460" target="_blank" rel="noopener noreferrer">
+              Micro-break systematic review and meta-analysis
+            </a>
+            <a href="https://pubmed.ncbi.nlm.nih.gov/36473088/" target="_blank" rel="noopener noreferrer">
+              20-20-20 timing study
+            </a>
+          </section>
+
+          <aside class="safety-note">
+            <strong>Safety boundary</strong>
+            <p>
+              These are general prompts for adults who can exercise safely.
+              Stop for pain, severe discomfort, dizziness, chest discomfort,
+              unusual breathlessness, numbness, or loss of balance.
+            </p>
+          </aside>
+
+          <p class="full-evidence-link">
+            The full claim ledger is available in
+            <a href="./EVIDENCE.md">EVIDENCE.md</a>.
+          </p>
+        </div>
+      </article>
+    </dialog>
+
+    <dialog class="compact-dialog" id="quickDialog" aria-labelledby="quickDialogTitle">
+      <header class="compact-dialog-header">
+        <div>
+          <p class="eyebrow">Choose by feeling</p>
+          <h2 id="quickDialogTitle">What would help now?</h2>
+        </div>
+        <button class="icon-button" type="button" data-close="quickDialog" aria-label="Close quick breaks">
+          <svg aria-hidden="true"><use href="#icon-x"></use></svg>
+        </button>
+      </header>
+      <div class="quick-dialog-list">
+        <button type="button" data-quick="eyes">
+          <svg aria-hidden="true"><use href="#icon-eye"></use></svg>
+          <span><strong>Soften your focus</strong><small>Look far for 20 seconds</small></span>
+        </button>
+        <button type="button" data-quick="stand">
+          <svg aria-hidden="true"><use href="#icon-stand"></use></svg>
+          <span><strong>Change position</strong><small>Stand or shift for 2 minutes</small></span>
+        </button>
+        <button type="button" data-quick="walk">
+          <svg aria-hidden="true"><use href="#icon-walk"></use></svg>
+          <span><strong>Leave the screen</strong><small>Take an easy 5-minute walk</small></span>
+        </button>
+        <button type="button" data-quick="water">
+          <svg aria-hidden="true"><use href="#icon-water"></use></svg>
+          <span><strong>Refill water</strong><small>Follow your own thirst</small></span>
+        </button>
+        <button type="button" data-quick="exercise">
+          <svg aria-hidden="true"><use href="#icon-move"></use></svg>
+          <span><strong>Choose a movement for me</strong><small>Seated or supported</small></span>
+        </button>
+      </div>
+      <button class="library-link" id="quickLibraryButton" type="button">
+        Browse the movement library <span aria-hidden="true">→</span>
+      </button>
+    </dialog>
+
+    <dialog class="sheet-dialog exercise-dialog" id="exerciseDialog" aria-labelledby="exerciseTitle">
+      <div class="sheet-shell">
+        <header class="sheet-header">
+          <div>
+            <p class="eyebrow">Conservative, sourced options</p>
+            <h2 id="exerciseTitle">Movement library</h2>
+          </div>
+          <button class="icon-button" type="button" data-close="exerciseDialog" aria-label="Close movement library">
+            <svg aria-hidden="true"><use href="#icon-x"></use></svg>
+          </button>
+        </header>
+        <div class="exercise-controls" role="group" aria-label="Filter movements">
+          <button type="button" class="is-active" data-exercise-filter="all">All</button>
+          <button type="button" data-exercise-filter="seated">Seated</button>
+          <button type="button" data-exercise-filter="standing">Standing</button>
+        </div>
+        <div class="exercise-list" id="exerciseList"></div>
+        <aside class="safety-note exercise-safety">
+          Use stable support and a clear floor. Move within a comfortable range.
+          Stop for pain, dizziness, unusual breathlessness, numbness, or loss of
+          balance.
+        </aside>
+      </div>
+    </dialog>
+
+    <dialog class="break-dialog" id="breakDialog" aria-labelledby="breakTitle">
+      <div class="break-shell">
+        <header class="break-header">
+          <span class="break-kicker" id="breakKicker">A quiet nudge</span>
+          <button class="icon-button inverse" id="breakCloseButton" type="button" aria-label="Skip and close">
+            <svg aria-hidden="true"><use href="#icon-x"></use></svg>
+          </button>
+        </header>
+
+        <div class="break-copy">
+          <h2 id="breakTitle">A small reset is due.</h2>
+          <p id="breakIntro">You decide what enough looks like.</p>
+        </div>
+
+        <div class="break-time">
+          <time id="breakTimer" datetime="PT0S">2:00</time>
+          <span id="breakTimerLabel">suggested</span>
+        </div>
+        <div class="break-timer-bar" id="breakTimerBar" aria-hidden="true">
+          <span id="breakTimerFill"></span>
+        </div>
+
+        <ol class="break-agenda" id="breakAgenda"></ol>
+        <p class="break-safety" id="breakSafety" hidden></p>
+
+        <div class="break-actions">
+          <button class="primary-button light" id="startBreakButton" type="button">
+            Start
+          </button>
+          <button class="secondary-button light" id="doneBreakButton" type="button">
+            Done for now
+          </button>
+          <button class="text-button light" id="snoozeBreakButton" type="button">
+            Snooze 10 min
+          </button>
+          <button class="text-button light" id="skipBreakButton" type="button">
+            Skip
+          </button>
+        </div>
+        <button class="swap-exercise" id="swapExerciseButton" type="button" hidden>
+          Choose another movement
+        </button>
+      </div>
+    </dialog>
+
+    <dialog class="confirm-dialog" id="confirmDialog" aria-labelledby="confirmTitle">
+      <p class="eyebrow">Local browser data</p>
+      <h2 id="confirmTitle">Clear today?</h2>
+      <p id="confirmText">This cannot be undone.</p>
+      <div class="dialog-actions">
+        <button class="danger-button" id="confirmAction" type="button">Clear</button>
+        <button class="secondary-button" type="button" data-close="confirmDialog">Cancel</button>
+      </div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <div class="sr-only" id="statusAnnouncer" aria-live="polite"></div>
+
+    <noscript>
+      <div class="noscript-note">
+        Vulture Lite needs JavaScript to keep time and store your plan locally.
+      </div>
+    </noscript>
+  </body>
+</html>

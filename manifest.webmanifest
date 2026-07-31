@@ -1,0 +1,18 @@
+{
+  "name": "Vulture Lite",
+  "short_name": "Vulture",
+  "description": "A private, installless rhythm for movement, eye comfort, water, and longer breaks.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2f0e8",
+  "theme_color": "#285848",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

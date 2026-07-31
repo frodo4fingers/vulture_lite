@@ -1,0 +1,10 @@
+{
+  "name": "vulture-lite",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A private, installless break reminder for GitHub Pages.",
+  "scripts": {
+    "test": "node --check app.js && node --check content.js && node --check scheduler.js && node --check sw.js && node --test"
+  }
+}
