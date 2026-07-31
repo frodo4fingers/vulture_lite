@@ -11,11 +11,11 @@ desk-side movement.
 
 - Four independent, configurable reminder channels: eye comfort, movement,
   water, and a longer reset.
-- Browser notifications, an updating document title, and a color-changing
-  favicon.
+- A default-on browser-notification preference, an updating document title,
+  and a color-changing favicon.
 - Nearby reminders are bundled into one interruption.
-- Pause, snooze, skip, quiet work hours, optional chime, and manual quick
-  breaks.
+- Pause, snooze, skip, quiet work hours, a default-on gentle chime, and manual
+  quick breaks.
 - A small local-only daily history without accounts, analytics, streaks, or
   health scoring.
 - A sourced movement library with seated and standing options.

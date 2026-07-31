@@ -106,6 +106,7 @@ const settingInputs = {
   scheduleEnabled: byId("scheduleEnabled"),
   workStart: byId("workStart"),
   workEnd: byId("workEnd"),
+  notificationsEnabled: byId("notificationsEnabled"),
   soundEnabled: byId("soundEnabled"),
 };
 
@@ -130,7 +131,8 @@ function createDefaultState() {
     version: STATE_VERSION,
     onboardingComplete: false,
     settings: {
-      soundEnabled: false,
+      notificationsEnabled: true,
+      soundEnabled: true,
       schedule: {
         enabled: false,
         start: "09:00",
@@ -266,7 +268,14 @@ function normalizeState(value) {
     version: STATE_VERSION,
     onboardingComplete: Boolean(value.onboardingComplete),
     settings: {
-      soundEnabled: Boolean(sourceSettings.soundEnabled),
+      notificationsEnabled:
+        typeof sourceSettings.notificationsEnabled === "boolean"
+          ? sourceSettings.notificationsEnabled
+          : fallback.settings.notificationsEnabled,
+      soundEnabled:
+        typeof sourceSettings.soundEnabled === "boolean"
+          ? sourceSettings.soundEnabled
+          : fallback.settings.soundEnabled,
       schedule: {
         enabled: Boolean(sourceSchedule.enabled),
         start:
@@ -541,6 +550,14 @@ async function requestNotificationPermission() {
   }
 }
 
+async function enableNotifications() {
+  state.settings.notificationsEnabled = true;
+  settingInputs.notificationsEnabled.checked = true;
+  persistState();
+  renderNotificationState();
+  await requestNotificationPermission();
+}
+
 async function notifyPrompt(prompt) {
   if (state.settings.soundEnabled) {
     void playChime();
@@ -552,6 +569,7 @@ async function notifyPrompt(prompt) {
     Boolean(document.querySelector("dialog[open]:not(#breakDialog)"));
 
   if (
+    !state.settings.notificationsEnabled ||
     !shouldUseSystemNotification ||
     !isLeader ||
     currentNotificationPermission() !== "granted"
@@ -1254,6 +1272,18 @@ function renderExerciseLibrary() {
 
 function renderNotificationState() {
   const permission = currentNotificationPermission();
+  if (!state.settings.notificationsEnabled) {
+    refs.browserNoteTitle.textContent = "Signals are quiet";
+    refs.browserNoteText.textContent =
+      "Browser notifications are off; the favicon and page title still change.";
+    refs.notificationButton.textContent = "Turn notifications on";
+    refs.notificationButton.disabled = false;
+    refs.settingsNotificationStatus.textContent = "Off in Vulture Lite.";
+    refs.settingsNotificationButton.textContent = "Enable";
+    refs.settingsNotificationButton.disabled = false;
+    return;
+  }
+
   if (permission === "granted") {
     refs.browserNoteTitle.textContent = "Signals are ready";
     refs.browserNoteText.textContent =
@@ -1685,7 +1715,12 @@ function setCheckedValues(name, values) {
 }
 
 function populateSettingsForm() {
-  const { reminders, schedule, soundEnabled } = state.settings;
+  const {
+    reminders,
+    schedule,
+    notificationsEnabled,
+    soundEnabled,
+  } = state.settings;
   settingInputs.eyesEnabled.checked = reminders.eyes.enabled;
   settingInputs.eyesInterval.value = reminders.eyes.intervalMinutes;
   settingInputs.eyesDuration.value = reminders.eyes.durationSeconds;
@@ -1707,6 +1742,7 @@ function populateSettingsForm() {
   settingInputs.scheduleEnabled.checked = schedule.enabled;
   settingInputs.workStart.value = schedule.start;
   settingInputs.workEnd.value = schedule.end;
+  settingInputs.notificationsEnabled.checked = notificationsEnabled;
   settingInputs.soundEnabled.checked = soundEnabled;
 
   setCheckedValues(
@@ -1793,6 +1829,7 @@ function saveSettingsFromForm() {
   );
 
   const nextSettings = {
+    notificationsEnabled: settingInputs.notificationsEnabled.checked,
     soundEnabled: settingInputs.soundEnabled.checked,
     schedule: {
       enabled: settingInputs.scheduleEnabled.checked,
@@ -1863,6 +1900,7 @@ function saveSettingsFromForm() {
   const scheduleChanged =
     JSON.stringify(previousSettings.schedule) !==
     JSON.stringify(nextSettings.schedule);
+  const notificationsWereEnabled = previousSettings.notificationsEnabled;
   const soundWasEnabled = previousSettings.soundEnabled;
   state.settings = nextSettings;
   if (
@@ -1885,6 +1923,9 @@ function saveSettingsFromForm() {
   if (!soundWasEnabled && nextSettings.soundEnabled) {
     void playChime(true);
   }
+  if (!notificationsWereEnabled && nextSettings.notificationsEnabled) {
+    void requestNotificationPermission();
+  }
 }
 
 function startRhythm() {
@@ -1904,6 +1945,24 @@ function startRhythm() {
   renderAll(now);
   showToast("Your local rhythm is running. Keep this tab open.");
   return true;
+}
+
+async function startRhythmWithSignals() {
+  if (!startRhythm()) {
+    return;
+  }
+  if (state.settings.soundEnabled) {
+    void playChime(true);
+  }
+  if (state.settings.notificationsEnabled) {
+    await requestNotificationPermission();
+  }
+}
+
+function startQuietly() {
+  state.settings.notificationsEnabled = false;
+  state.settings.soundEnabled = false;
+  startRhythm();
 }
 
 function togglePause() {
@@ -1932,7 +1991,7 @@ function handlePrimaryAction() {
     return;
   }
   if (!state.runtime.running) {
-    startRhythm();
+    void startRhythmWithSignals();
     return;
   }
   if (enabledReminderIds().length === 0) {
@@ -2015,10 +2074,10 @@ function bindEvents() {
     openDialog(refs.evidenceDialog),
   );
   refs.notificationButton.addEventListener("click", () => {
-    void requestNotificationPermission();
+    void enableNotifications();
   });
   refs.settingsNotificationButton.addEventListener("click", () => {
-    void requestNotificationPermission();
+    void enableNotifications();
   });
   refs.primaryAction.addEventListener("click", handlePrimaryAction);
   refs.pauseButton.addEventListener("click", togglePause);
@@ -2067,7 +2126,7 @@ function bindEvents() {
   byId("clearDataButton").addEventListener("click", () => {
     askForConfirmation({
       title: "Clear all local data?",
-      text: "Your plan, work hours, sound setting, and today’s trace will be removed from this browser.",
+      text: "Your plan, work hours, signal settings, and today’s trace will be removed from this browser.",
       action: "Clear everything",
       onConfirm: clearAllData,
     });
@@ -2079,12 +2138,10 @@ function bindEvents() {
     callback?.();
   });
 
-  byId("onboardingNotify").addEventListener("click", async () => {
-    if (startRhythm()) {
-      await requestNotificationPermission();
-    }
+  byId("onboardingNotify").addEventListener("click", () => {
+    void startRhythmWithSignals();
   });
-  byId("onboardingQuiet").addEventListener("click", startRhythm);
+  byId("onboardingQuiet").addEventListener("click", startQuietly);
   byId("onboardingCustomize").addEventListener("click", () => {
     closeDialog(refs.onboardingDialog);
     window.setTimeout(() => openSettingsForChannel(), 0);
