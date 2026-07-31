@@ -16,6 +16,8 @@ desk-side movement.
 - Nearby reminders are bundled into one interruption.
 - Pause, snooze, skip, quiet work hours, a default-on gentle chime, and manual
   quick breaks.
+- A browsable library of eye rests, restorative pauses, breathing, and
+  conservative seated or supported movements.
 - A small local-only daily history without accounts, analytics, streaks, or
   health scoring.
 - A sourced movement library with seated and standing options.
@@ -75,7 +77,7 @@ npm test
 | `styles.css` | Responsive visual system |
 | `app.js` | Persistence, UI, reminders, notifications, and break flows |
 | `scheduler.js` | Pure scheduling helpers |
-| `content.js` | Reminder and exercise content |
+| `content.js` | Reminder, break-library, and exercise content |
 | `sw.js` | Offline cache and notification-click handling |
 | `PRODUCT.md` | Product decisions and boundaries |
 | `DESIGN.md` | Durable visual and interaction direction |

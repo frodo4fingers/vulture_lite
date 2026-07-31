@@ -71,6 +71,8 @@ stack. The countdown uses tabular numerals.
   streaks, scores, goals, or shame.
 - **Quick moments:** six immediate choices cover eye rest, position change,
   walking, water, guided movement, and tea or coffee.
+- **Break library:** one filterable sheet presents every restorative break and
+  guided movement without changing the four-channel reminder hierarchy.
 - **Side sheet:** settings and evidence use native dialogs styled as calm
   sheets. Forms save automatically or with one clear close action.
 - **Break stage:** a focused dialog that turns a due reminder into a short,
