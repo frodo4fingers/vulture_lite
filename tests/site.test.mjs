@@ -17,6 +17,39 @@ test("privacy and browser reliability limits are visible in the shell", async ()
   assert.match(html, /Keep this tab open/);
 });
 
+test("notifications and the gentle chime are the default start", async () => {
+  const [html, app] = await Promise.all([
+    readFile(new URL("index.html", root), "utf8"),
+    readFile(new URL("app.js", root), "utf8"),
+  ]);
+
+  assert.match(html, /Start with notifications and chime/);
+  assert.match(
+    html,
+    /id="notificationsEnabled" type="checkbox" checked/,
+  );
+  assert.match(html, /id="soundEnabled" type="checkbox" checked/);
+  assert.match(app, /notificationsEnabled: true/);
+  assert.match(app, /soundEnabled: true/);
+  assert.match(
+    app,
+    /typeof sourceSettings\.notificationsEnabled === "boolean"[\s\S]*fallback\.settings\.notificationsEnabled/,
+  );
+  assert.match(app, /!state\.settings\.notificationsEnabled \|\|/);
+  assert.match(
+    app,
+    /if \(!state\.runtime\.running\) \{\s*void startRhythmWithSignals\(\);/,
+  );
+  assert.match(
+    app,
+    /if \(state\.settings\.soundEnabled\) \{\s*void playChime\(true\);/,
+  );
+  assert.match(
+    app,
+    /function startQuietly\(\) \{\s*state\.settings\.notificationsEnabled = false;\s*state\.settings\.soundEnabled = false;\s*startRhythm\(\);/,
+  );
+});
+
 test("quick moments cover the core break choices", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
   for (const quickMoment of [

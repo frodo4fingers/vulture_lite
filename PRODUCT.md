@@ -28,6 +28,8 @@ optimal for everyone.
    - movement every 30 minutes for 2 minutes;
    - water every 60 minutes;
    - a longer walk, drink, or guided movement every 90 minutes.
+   Browser notifications and the gentle chime are the default start, with a
+   quiet opt-out.
 2. The user can change every interval, duration, activity mix, workday, and
    notification preference.
 3. The main view shows one clear next nudge, the rest of the plan, and a

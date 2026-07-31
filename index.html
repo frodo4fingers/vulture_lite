@@ -316,7 +316,7 @@
       </p>
       <div class="dialog-actions stacked-mobile">
         <button class="primary-button" id="onboardingNotify" type="button">
-          Start with notifications
+          Start with notifications and chime
         </button>
         <button class="secondary-button" id="onboardingQuiet" type="button">
           Start quietly
@@ -537,9 +537,19 @@
               <h3 id="signalsHeading">Signals</h3>
               <p>Notifications work only while Vulture Lite remains open.</p>
             </div>
+            <label class="setting-line">
+              <span>
+                <strong>Browser notifications</strong>
+                <small>On by default; browser permission is still required.</small>
+              </span>
+              <span class="switch">
+                <input id="notificationsEnabled" type="checkbox" checked>
+                <span aria-hidden="true"></span>
+              </span>
+            </label>
             <div class="notification-setting">
               <div>
-                <strong>Browser notifications</strong>
+                <strong>Browser permission</strong>
                 <small id="settingsNotificationStatus">Not enabled yet.</small>
               </div>
               <button class="small-button" id="settingsNotificationButton" type="button">
@@ -549,10 +559,10 @@
             <label class="setting-line">
               <span>
                 <strong>Gentle chime</strong>
-                <small>Off by default; previewed when enabled.</small>
+                <small>On by default; previewed when started or re-enabled.</small>
               </span>
               <span class="switch">
-                <input id="soundEnabled" type="checkbox">
+                <input id="soundEnabled" type="checkbox" checked>
                 <span aria-hidden="true"></span>
               </span>
             </label>
