@@ -41,6 +41,16 @@ compared with uninterrupted sitting. Reviews comparing standing and light
 walking generally find larger acute effects from walking. These studies do not
 establish one optimal cadence or prove long-term disease prevention.
 
+A randomized crossover trial in 23 adults with medication-controlled type 2
+diabetes tested simple resistance activity breaks made up of half-squats, calf
+raises, gluteal contractions, and knee raises. Six minutes each hour reduced
+acute post-meal glucose and insulin compared with uninterrupted sitting; three
+minutes each half-hour did not in that trial. A later frequency meta-analysis
+found a modest glucose advantage for interruptions at least every 30 minutes,
+but rated the evidence low certainty. Vulture Lite therefore offers a short,
+supported resistance sampler without claiming that its dose reproduces those
+metabolic findings.
+
 ### Micro-breaks and work
 
 Albulescu et al. (2022) defined micro-breaks as pauses under ten minutes. Their
@@ -48,6 +58,12 @@ meta-analysis found improved vigor and reduced fatigue on average. Performance
 effects varied: break duration and task type mattered, and short breaks did not
 consistently improve demanding cognitive work. Included studies did not show a
 general performance penalty from taking a break.
+
+The longer-reset rotation also includes an explicitly off-screen pause.
+Albulescu et al. did not establish one superior break activity, and demanding
+cognitive work may need more than a short micro-break for performance recovery.
+The app therefore treats quiet, social, and lightly active off-screen time as
+equally valid options rather than prescribing one recovery technique.
 
 ### Eye comfort
 
@@ -80,14 +96,38 @@ or prevention claims. Individual movements are included because they are
 conservative, traceable options for varying activity, not because each one has
 been shown to prevent injury.
 
+A 2026 systematic review and meta-analysis of 19 randomized trials reported
+improvements in neck and shoulder pain and neck disability from workplace
+micro-exercise programs. Certainty ranged from moderate to very low, with high
+heterogeneity and possible publication bias. Most interventions were repeated
+programs for symptomatic or sedentary workers, not isolated reminder doses.
+Head glides, shoulder-blade squeezes, shoulder rolls, and hand movements remain
+guidance-sourced options rather than individually validated treatments.
+
+### Breathing and restorative views
+
+A remote randomized trial compared daily five-minute breathwork practices with
+mindfulness meditation over one month. Exhale-focused cyclic sighing produced
+larger mood improvements and reduced respiratory rate. This supports offering a
+comfortable slow-breathing option, but not claiming that a single prompted
+session treats stress or anxiety. The app avoids fast-only breathing, forced
+depth, and breath-holding instructions.
+
+A laboratory study of 150 students found fewer sustained-attention lapses
+after a 40-second view of a green roof than after a concrete-roof view. This is
+a promising single study rather than a universal prescription. Vulture Lite
+offers greenery as an optional version of its existing distance-view cue.
+
 ## Defaults are product choices
 
 The balanced plan uses:
 
-- 20 seconds of eye comfort every 20 minutes;
+- 20 seconds of rotating distance, greenery, blink, or closed-eye comfort every
+  20 minutes;
 - 2 minutes of movement every 30 minutes;
 - a water cue every 60 minutes;
-- a 5-minute longer reset every 90 minutes;
+- a 5-minute rotating walk, drink, breathing, off-screen, or guided reset every
+  90 minutes;
 - a 90-second bundling window for nearby reminders;
 - a 10-minute snooze;
 - a 30-minute main pause action.
@@ -151,3 +191,19 @@ clinician which movements are suitable.
     in the treatment of musculoskeletal disorders in office workers: a
     systematic review*, *BMJ Open* (2022):
     <https://bmjopen.bmj.com/content/12/1/e054288>
+14. *Frequency of Interruptions to Sitting Time: Benefits for Postprandial
+     Metabolism in Type 2 Diabetes*, *Diabetes Care* (2021):
+     <https://pubmed.ncbi.nlm.nih.gov/33905343/>
+15. *Optimal Frequency of Interrupting Prolonged Sitting for Cardiometabolic
+     Health: A Systematic Review and Meta-analysis of Randomized Crossover
+     Trials*, *Scandinavian Journal of Medicine & Science in Sports* (2024):
+     <https://pubmed.ncbi.nlm.nih.gov/39630056/>
+16. *Effectiveness of micro-exercises for managing neck/shoulder pain in
+     sedentary workers: a systematic review and meta-analysis* (2026):
+     <https://pubmed.ncbi.nlm.nih.gov/42297926/>
+17. Balban et al., *Brief structured respiration practices enhance mood and
+     reduce physiological arousal*, *Cell Reports Medicine* (2023):
+     <https://pubmed.ncbi.nlm.nih.gov/36630953/>
+18. Lee et al., *40-second green roof views sustain attention: The role of
+     micro-breaks in attention restoration*, *Journal of Environmental
+     Psychology* (2015): <https://doi.org/10.1016/j.jenvp.2015.04.003>

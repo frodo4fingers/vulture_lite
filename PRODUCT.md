@@ -32,12 +32,15 @@ optimal for everyone.
    quiet opt-out.
 2. The user can change every interval, duration, activity mix, workday, and
    notification preference.
-3. The main view shows one clear next nudge, the rest of the plan, and a
+3. Eye, movement, water, and longer-reset signals keep their own repeating
+   cadence while rotating through the selected activities inside each channel.
+4. Every activity is also available in one browsable break library.
+5. The main view shows one clear next nudge, the rest of the plan, and a
    pressure-free local summary of moments taken today.
-4. Nearby reminders are combined so the app does not interrupt twice.
-5. A due moment can be started, completed, snoozed, or skipped. Nothing blocks
+6. Nearby reminders are combined so the app does not interrupt twice.
+7. A due moment can be started, completed, snoozed, or skipped. Nothing blocks
    work.
-6. The favicon and document title show calm, approaching, due, paused, and
+8. The favicon and document title show calm, approaching, due, paused, and
    off-hours states.
 
 ## Product principles
@@ -60,10 +63,10 @@ optimal for everyone.
 
 | Channel | Default | Purpose |
 | --- | --- | --- |
-| Eye comfort | 20 seconds every 20 minutes | Look into the distance, blink fully, or gently close the eyes |
+| Eye comfort | 20 seconds every 20 minutes | Look into the distance or toward greenery, blink fully, or gently close the eyes |
 | Move | 2 minutes every 30 minutes | Stand, change position, walk, or use a conservative guided movement |
 | Water | Every 60 minutes | A neutral prompt to drink if wanted; no fixed intake target |
-| Longer reset | 5 minutes every 90 minutes | Step away, walk, make tea or coffee, or choose a movement |
+| Longer reset | 5 minutes every 90 minutes | Step away, walk, make tea or coffee, breathe slowly, rest off-screen, or choose a movement |
 
 The defaults are product choices, not universal clinical thresholds.
 

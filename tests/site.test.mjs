@@ -64,6 +64,17 @@ test("quick moments cover the core break choices", async () => {
   }
 });
 
+test("the full break library exposes restorative and movement filters", async () => {
+  const html = await readFile(new URL("index.html", root), "utf8");
+  assert.match(html, />Break library<\/h2>/);
+  assert.match(html, /Your four signals keep their rhythm/);
+  for (const filter of ["eyes", "restore", "seated", "standing"]) {
+    assert.match(html, new RegExp(`data-library-filter="${filter}"`));
+  }
+  assert.match(html, /Simple resistance activity trial/);
+  assert.match(html, /Brief structured respiration trial/);
+});
+
 test("service worker precaches every runtime module", async () => {
   const worker = await readFile(new URL("sw.js", root), "utf8");
   for (const asset of [

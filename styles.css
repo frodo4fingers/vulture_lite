@@ -1176,6 +1176,13 @@ dialog[open] {
   font-size: clamp(2rem, 5vw, 2.7rem);
 }
 
+.sheet-description {
+  max-width: 470px;
+  margin: 8px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+}
+
 .sheet-footer {
   position: sticky;
   bottom: 0;
@@ -1585,6 +1592,7 @@ dialog[open] {
 
 .exercise-controls {
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
   padding: 20px 30px 8px;
 }
@@ -1608,6 +1616,20 @@ dialog[open] {
 
 .exercise-list {
   padding: 8px 30px 24px;
+}
+
+.library-group + .library-group {
+  margin-top: 24px;
+}
+
+.library-group-title {
+  margin: 14px 0 6px;
+  color: var(--ink-soft);
+  font-family: var(--ui);
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .exercise-card {
