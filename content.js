@@ -18,8 +18,9 @@ export const REMINDER_DEFINITIONS = {
     maxIntervalMinutes: 90,
     minDurationSeconds: 10,
     maxDurationSeconds: 180,
-    defaultActivities: ["distance", "blink"],
-    validActivities: ["distance", "blink", "eyes-closed"],
+    defaultActivities: ["distance", "nature", "blink", "eyes-closed"],
+    legacyDefaultActivities: ["distance", "blink"],
+    validActivities: ["distance", "nature", "blink", "eyes-closed"],
   },
   movement: {
     label: "Move",
@@ -54,7 +55,8 @@ export const REMINDER_DEFINITIONS = {
   reset: {
     label: "Longer reset",
     shortLabel: "Reset",
-    description: "Step away for a walk, drink, or guided movement.",
+    description:
+      "Step away for a walk, drink, breathing pause, off-screen rest, or guided movement.",
     icon: "cup",
     tone: "reset",
     defaultIntervalMinutes: 90,
@@ -63,8 +65,9 @@ export const REMINDER_DEFINITIONS = {
     maxIntervalMinutes: 240,
     minDurationSeconds: 60,
     maxDurationSeconds: 900,
-    defaultActivities: ["coffee", "walk", "exercise"],
-    validActivities: ["coffee", "walk", "exercise"],
+    defaultActivities: ["coffee", "walk", "breathe", "offscreen", "exercise"],
+    legacyDefaultActivities: ["coffee", "walk", "exercise"],
+    validActivities: ["coffee", "walk", "breathe", "offscreen", "exercise"],
   },
 };
 
@@ -78,6 +81,28 @@ export const ACTIVITY_LIBRARY = {
       "Choose a distant object or view through a window.",
       "Let your focus soften; blink normally.",
     ],
+    library: {
+      channelId: "eyes",
+      durationSeconds: 20,
+      tags: ["eyes", "restore"],
+    },
+  },
+  nature: {
+    title: "Look toward greenery",
+    detail: "Use a distant green view for this eye-comfort moment if one is available.",
+    icon: "leaf",
+    steps: [
+      "Let your hands rest and release the screen.",
+      "Look through a window or toward a plant, tree, or other greenery.",
+      "Let the view hold your attention without searching for detail.",
+    ],
+    source: "Green-view micro-break trial",
+    sourceUrl: "https://doi.org/10.1016/j.jenvp.2015.04.003",
+    library: {
+      channelId: "eyes",
+      durationSeconds: 40,
+      tags: ["eyes", "restore"],
+    },
   },
   blink: {
     title: "Five slow blinks",
@@ -88,6 +113,11 @@ export const ACTIVITY_LIBRARY = {
       "Make five slow, complete blinks.",
       "Let your forehead and jaw stay easy.",
     ],
+    library: {
+      channelId: "eyes",
+      durationSeconds: 20,
+      tags: ["eyes", "restore"],
+    },
   },
   "eyes-closed": {
     title: "A gentle closed-eye rest",
@@ -98,6 +128,11 @@ export const ACTIVITY_LIBRARY = {
       "Close your eyes without pressing or rubbing them.",
       "Open them whenever you are ready.",
     ],
+    library: {
+      channelId: "eyes",
+      durationSeconds: 30,
+      tags: ["eyes", "restore"],
+    },
   },
   position: {
     title: "Change your support",
@@ -108,6 +143,11 @@ export const ACTIVITY_LIBRARY = {
       "Shift your weight in the chair.",
       "Let your shoulders drop rather than holding a pose.",
     ],
+    library: {
+      channelId: "movement",
+      durationSeconds: 120,
+      tags: ["seated"],
+    },
   },
   stand: {
     title: "Stand and shift",
@@ -119,6 +159,11 @@ export const ACTIVITY_LIBRARY = {
       "Shift your weight or take a few easy steps.",
     ],
     safety: "Choose a seated option if standing is unsafe or unsteady.",
+    library: {
+      channelId: "movement",
+      durationSeconds: 120,
+      tags: ["standing"],
+    },
   },
   walk: {
     title: "Take an easy walk",
@@ -131,6 +176,11 @@ export const ACTIVITY_LIBRARY = {
     ],
     safety:
       "Stop for pain, dizziness, chest discomfort, unusual breathlessness, or loss of balance.",
+    library: {
+      channelId: "reset",
+      durationSeconds: 300,
+      tags: ["standing", "restore"],
+    },
   },
   water: {
     title: "A water moment",
@@ -141,6 +191,11 @@ export const ACTIVITY_LIBRARY = {
       "Refill a glass or bottle.",
       "Follow your own thirst and any medical guidance.",
     ],
+    library: {
+      channelId: "hydration",
+      durationSeconds: 30,
+      tags: ["restore"],
+    },
   },
   coffee: {
     title: "Make tea or coffee",
@@ -151,6 +206,48 @@ export const ACTIVITY_LIBRARY = {
       "Make any drink you enjoy, caffeinated or not.",
       "Take a few unhurried steps on the way.",
     ],
+    library: {
+      channelId: "reset",
+      durationSeconds: 300,
+      tags: ["standing", "restore"],
+    },
+  },
+  breathe: {
+    title: "A slower breathing reset",
+    detail: "Breathe comfortably for a few minutes with an easy, slightly longer exhale.",
+    icon: "breathe",
+    steps: [
+      "Sit or stand in a comfortable position and let your shoulders soften.",
+      "Breathe in gently, without trying to fill the lungs completely.",
+      "Let each exhale last a little longer than the inhale; do not hold or force the breath.",
+      "Return to your usual breathing whenever you want.",
+    ],
+    safety:
+      "Return to your usual breathing if you feel lightheaded, short of breath, or uncomfortable.",
+    source: "Brief structured respiration trial",
+    sourceUrl: "https://pubmed.ncbi.nlm.nih.gov/36630953/",
+    library: {
+      channelId: "reset",
+      durationSeconds: 300,
+      tags: ["seated", "restore"],
+    },
+  },
+  offscreen: {
+    title: "A full off-screen reset",
+    detail: "Give demanding work a longer pause without replacing it with another screen.",
+    icon: "pause",
+    steps: [
+      "Leave the computer and put the phone down if that is practical.",
+      "Choose a quiet pause, a short conversation, or a few unhurried steps.",
+      "Return when the break feels useful rather than trying to earn a result.",
+    ],
+    source: "Micro-break systematic review and meta-analysis",
+    sourceUrl: "https://doi.org/10.1371/journal.pone.0272460",
+    library: {
+      channelId: "reset",
+      durationSeconds: 600,
+      tags: ["restore"],
+    },
   },
 };
 
@@ -186,6 +283,79 @@ export const EXERCISES = [
     ],
     safety:
       "Keep the movement slow. Do not force it or hold your breath. Stop for pain.",
+    source: "CCOHS workstation stretching",
+    sourceUrl:
+      "https://www.ccohs.ca/oshanswers/ergonomics/office/stretching.html",
+  },
+  {
+    id: "head-glide",
+    title: "Head glide",
+    prompt: "Draw your head gently back without lifting the chin.",
+    dose: "Hold briefly; repeat up to 5 times",
+    icon: "seated",
+    tags: ["seated", "standing", "mobility"],
+    steps: [
+      "Sit or stand upright with your gaze level.",
+      "Keep the chin level and glide the head straight back, as if making a small double chin.",
+      "Pause without forcing the range, then release fully.",
+    ],
+    safety:
+      "Keep the movement small and slow. Stop for pain, dizziness, tingling, or unusual symptoms.",
+    source: "CCOHS workstation stretching",
+    sourceUrl:
+      "https://www.ccohs.ca/oshanswers/ergonomics/office/stretching.html",
+  },
+  {
+    id: "shoulder-blade-squeeze",
+    title: "Shoulder-blade squeeze",
+    prompt: "Bring the shoulder blades gently toward one another.",
+    dose: "Hold up to 5 seconds; repeat up to 5 times",
+    icon: "seated",
+    tags: ["seated", "standing", "mobility"],
+    steps: [
+      "Sit or stand tall with your arms relaxed.",
+      "Let the shoulders stay low as you draw the shoulder blades gently together.",
+      "Hold briefly, breathe normally, and release.",
+    ],
+    safety:
+      "Use only a comfortable range. Stop if the neck or shoulders become painful.",
+    source: "CCOHS workstation stretching",
+    sourceUrl:
+      "https://www.ccohs.ca/oshanswers/ergonomics/office/stretching.html",
+  },
+  {
+    id: "shoulder-roll",
+    title: "Slow shoulder rolls",
+    prompt: "Circle the shoulders slowly in both directions.",
+    dose: "5 backward rolls, then 5 forward",
+    icon: "seated",
+    tags: ["seated", "standing", "mobility"],
+    steps: [
+      "Let your arms hang easily and keep your head facing forward.",
+      "Roll both shoulders slowly backward five times.",
+      "Pause, then roll them slowly forward five times.",
+    ],
+    safety:
+      "Keep the circles comfortable and unforced. Stop if the movement causes pain.",
+    source: "CCOHS workstation stretching",
+    sourceUrl:
+      "https://www.ccohs.ca/oshanswers/ergonomics/office/stretching.html",
+  },
+  {
+    id: "finger-opening",
+    title: "Finger opening sequence",
+    prompt: "Move slowly from an open hand into a gentle fist and back.",
+    dose: "3 slow rounds per hand",
+    icon: "seated",
+    tags: ["seated", "mobility"],
+    steps: [
+      "Open one hand and spread the fingers without straining.",
+      "Make a gentle fist with the thumb resting outside the fingers.",
+      "Slide the fingertips toward the base of the fingers, then open the hand again.",
+      "Repeat with the other hand.",
+    ],
+    safety:
+      "Do not force the fingers with the other hand. Stop for pain, tingling, or numbness.",
     source: "CCOHS workstation stretching",
     sourceUrl:
       "https://www.ccohs.ca/oshanswers/ergonomics/office/stretching.html",
@@ -258,6 +428,25 @@ export const EXERCISES = [
       "Choose a seated movement if standing is unsafe or you have significant balance problems.",
     source: "NHS strength exercises",
     sourceUrl: "https://www.nhs.uk/live-well/exercise/strength-exercises/",
+  },
+  {
+    id: "simple-resistance-circuit",
+    title: "Simple resistance circuit",
+    prompt: "Combine a few supported lower-body movements in one calm round.",
+    dose: "One slow round; about 2–3 minutes",
+    icon: "stand",
+    tags: ["standing", "strength", "balance"],
+    steps: [
+      "Stand behind a stable chair with a clear floor around you.",
+      "Complete up to 5 shallow supported mini-squats.",
+      "Complete up to 5 supported calf raises.",
+      "Lift one knee at a time for up to 5 lifts per side.",
+      "Finish with 5 gentle tighten-and-release contractions around the hips and buttocks.",
+    ],
+    safety:
+      "Use stable support and a comfortable range. Choose a seated movement if standing is unsafe or unsteady.",
+    source: "Simple resistance activity trial",
+    sourceUrl: "https://pubmed.ncbi.nlm.nih.gov/33905343/",
   },
   {
     id: "supported-calf-raise",

@@ -21,7 +21,7 @@ import {
 
 const STORAGE_KEY = "vulture-lite:state:v1";
 const LEADER_KEY = "vulture-lite:leader:v1";
-const STATE_VERSION = 1;
+const STATE_VERSION = 2;
 const BUNDLE_WINDOW = 90 * SECOND;
 const REOPEN_RESET_AFTER = 15 * MINUTE;
 const LEADER_TTL = 10 * SECOND;
@@ -163,14 +163,27 @@ function createEmptyHistory(date = new Date()) {
   };
 }
 
+function arraysEqual(left, right) {
+  return (
+    left.length === right.length &&
+    left.every((value, index) => value === right[index])
+  );
+}
+
 function normalizeReminder(id, value, fallback) {
   const definition = REMINDER_DEFINITIONS[id];
   const source = value && typeof value === "object" ? value : {};
-  const activities = Array.isArray(source.activities)
+  const savedActivities = Array.isArray(source.activities)
     ? source.activities.filter((activity) =>
         definition.validActivities.includes(activity),
       )
-    : [...fallback.activities];
+    : null;
+  const activities =
+    savedActivities &&
+    Array.isArray(definition.legacyDefaultActivities) &&
+    arraysEqual(savedActivities, definition.legacyDefaultActivities)
+      ? [...fallback.activities]
+      : (savedActivities ?? [...fallback.activities]);
 
   if (id === "eyes" && !activities.includes("distance")) {
     activities.unshift("distance");
@@ -361,7 +374,7 @@ let currentPrompt = null;
 let activeBreak = null;
 let promptQueue = [];
 let confirmationCallback = null;
-let exerciseFilter = "all";
+let libraryFilter = "all";
 let serviceWorkerRegistration = null;
 let audioContext = null;
 let toastTimer = null;
@@ -712,9 +725,11 @@ function peekActivity(id) {
     reminder.activities[index % reminder.activities.length] ??
     REMINDER_DEFINITIONS[id].defaultActivities[0];
   if (activityId === "exercise") {
+    const exercise =
+      EXERCISES[state.runtime.exerciseIndex % EXERCISES.length] ?? EXERCISES[0];
     return {
-      title: "Guided desk-side movement",
-      icon: "move",
+      title: exercise?.title ?? "Guided desk-side movement",
+      icon: exercise?.icon ?? "move",
     };
   }
   return ACTIVITY_LIBRARY[activityId] ?? {
@@ -777,8 +792,8 @@ function chooseActivity(
     icon: activity.icon,
     steps: [...activity.steps],
     safety: activity.safety ?? null,
-    source: null,
-    sourceUrl: null,
+    source: activity.source ?? null,
+    sourceUrl: activity.sourceUrl ?? null,
     durationSeconds: durationSeconds ?? reminder.durationSeconds,
     exercise: null,
   };
@@ -1234,39 +1249,93 @@ function startQuickBreak(kind, exercise = null) {
   window.setTimeout(() => enqueuePrompt(prompt), 0);
 }
 
-function renderExerciseLibrary() {
+function startLibraryActivity(activityId) {
+  const activity = ACTIVITY_LIBRARY[activityId];
+  if (!activity?.library) {
+    throw new Error(`Activity is not available in the break library: ${activityId}`);
+  }
+  const { channelId, durationSeconds } = activity.library;
+  closeDialog(refs.quickDialog);
+  closeDialog(refs.exerciseDialog);
+  const prompt = buildPrompt([channelId], "manual", {
+    activities: { [channelId]: activityId },
+    durations: { [channelId]: durationSeconds },
+  });
+  window.setTimeout(() => enqueuePrompt(prompt), 0);
+}
+
+function createLibraryCard(item) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "exercise-card";
+  button.dataset.libraryId = item.id;
+
+  const icon = document.createElement("span");
+  icon.className = "exercise-icon";
+  icon.append(createIcon(item.icon));
+
+  const copy = document.createElement("span");
+  const title = document.createElement("h3");
+  title.textContent = item.title;
+  const prompt = document.createElement("p");
+  prompt.textContent = item.prompt;
+  copy.append(title, prompt);
+
+  const dose = document.createElement("span");
+  dose.className = "exercise-dose";
+  dose.textContent = item.dose;
+
+  button.append(icon, copy, dose);
+  button.addEventListener("click", item.onSelect);
+  return button;
+}
+
+function renderBreakLibrary() {
   refs.exerciseList.replaceChildren();
-  const visible = EXERCISES.filter(
-    (exercise) =>
-      exerciseFilter === "all" || exercise.tags.includes(exerciseFilter),
-  );
+  const activityItems = Object.entries(ACTIVITY_LIBRARY)
+    .filter(([, activity]) => activity.library)
+    .map(([activityId, activity]) => ({
+      id: `activity:${activityId}`,
+      title: activity.title,
+      prompt: activity.detail,
+      dose: formatDuration(activity.library.durationSeconds),
+      icon: activity.icon,
+      tags: activity.library.tags,
+      onSelect: () => startLibraryActivity(activityId),
+    }));
+  const exerciseItems = EXERCISES.map((exercise) => ({
+    id: `exercise:${exercise.id}`,
+    title: exercise.title,
+    prompt: exercise.prompt,
+    dose: exercise.dose,
+    icon: exercise.icon,
+    tags: exercise.tags,
+    onSelect: () => startQuickBreak("exercise", exercise),
+  }));
+  const groups = [
+    { title: "Breaks and resets", items: activityItems },
+    { title: "Guided movements", items: exerciseItems },
+  ];
 
-  for (const exercise of visible) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "exercise-card";
-    button.dataset.exerciseId = exercise.id;
+  for (const group of groups) {
+    const visible = group.items.filter(
+      (item) =>
+        libraryFilter === "all" || item.tags.includes(libraryFilter),
+    );
+    if (visible.length === 0) {
+      continue;
+    }
 
-    const icon = document.createElement("span");
-    icon.className = "exercise-icon";
-    icon.append(createIcon(exercise.icon));
-
-    const copy = document.createElement("span");
-    const title = document.createElement("h3");
-    title.textContent = exercise.title;
-    const prompt = document.createElement("p");
-    prompt.textContent = exercise.prompt;
-    copy.append(title, prompt);
-
-    const dose = document.createElement("span");
-    dose.className = "exercise-dose";
-    dose.textContent = exercise.dose;
-
-    button.append(icon, copy, dose);
-    button.addEventListener("click", () => {
-      startQuickBreak("exercise", exercise);
-    });
-    refs.exerciseList.append(button);
+    const section = document.createElement("section");
+    section.className = "library-group";
+    const heading = document.createElement("h3");
+    heading.className = "library-group-title";
+    heading.textContent = group.title;
+    section.append(heading);
+    for (const item of visible) {
+      section.append(createLibraryCard(item));
+    }
+    refs.exerciseList.append(section);
   }
 }
 
@@ -2095,26 +2164,26 @@ function bindEvents() {
     });
   }
 
-  const openExerciseLibrary = () => {
+  const openBreakLibrary = () => {
     closeDialog(refs.quickDialog);
-    renderExerciseLibrary();
+    renderBreakLibrary();
     window.setTimeout(() => openDialog(refs.exerciseDialog), 0);
   };
   byId("exerciseLibraryButton").addEventListener(
     "click",
-    openExerciseLibrary,
+    openBreakLibrary,
   );
-  byId("quickLibraryButton").addEventListener("click", openExerciseLibrary);
+  byId("quickLibraryButton").addEventListener("click", openBreakLibrary);
 
-  for (const button of document.querySelectorAll("[data-exercise-filter]")) {
+  for (const button of document.querySelectorAll("[data-library-filter]")) {
     button.addEventListener("click", () => {
-      exerciseFilter = button.dataset.exerciseFilter;
+      libraryFilter = button.dataset.libraryFilter;
       for (const sibling of document.querySelectorAll(
-        "[data-exercise-filter]",
+        "[data-library-filter]",
       )) {
         sibling.classList.toggle("is-active", sibling === button);
       }
-      renderExerciseLibrary();
+      renderBreakLibrary();
     });
   }
 
@@ -2272,7 +2341,7 @@ function initialize() {
   state.runtime.lastHeartbeatAt = now;
   persistState();
   populateSettingsForm();
-  renderExerciseLibrary();
+  renderBreakLibrary();
   bindEvents();
   claimLeadership();
   renderAll(now);
