@@ -132,7 +132,7 @@
       </section>
 
       <div class="dashboard">
-        <section class="timer-panel" aria-labelledby="nextHeading">
+        <section class="timer-panel" id="timerPanel" aria-labelledby="nextHeading">
           <div class="timer-heading">
             <p class="eyebrow" id="stateEyebrow">Your rhythm is ready</p>
             <h1 id="nextHeading">
@@ -142,19 +142,7 @@
               A balanced plan is already prepared, and every setting is yours.
             </p>
           </div>
-
           <div class="time-instrument" aria-describedby="countdownLabel">
-            <svg class="progress-ring" viewBox="0 0 240 240" aria-hidden="true">
-              <circle class="ring-track" cx="120" cy="120" r="104"/>
-              <circle
-                class="ring-value"
-                id="progressRing"
-                cx="120"
-                cy="120"
-                r="104"
-                pathLength="100"
-              />
-            </svg>
             <div class="countdown-copy">
               <span class="countdown-overline">Next nudge</span>
               <time id="countdown" datetime="PT0S">--:--</time>
@@ -544,6 +532,68 @@
             </fieldset>
           </section>
 
+          <section class="settings-section" aria-labelledby="appearanceHeading">
+            <div class="settings-intro">
+              <h3 id="appearanceHeading">Appearance</h3>
+              <p>Choose a soothing palette and how quietly the timer pane moves.</p>
+            </div>
+            <fieldset class="theme-fieldset">
+              <legend>Color theme</legend>
+              <div class="theme-picker">
+                <label class="theme-option" data-theme-option="forest">
+                  <input type="radio" name="colorTheme" value="forest" checked>
+                  <span class="theme-option-card">
+                    <span class="theme-preview" aria-hidden="true"></span>
+                    <span>
+                      <strong>Forest</strong>
+                      <small>Warm paper and deep green.</small>
+                    </span>
+                  </span>
+                </label>
+                <label class="theme-option" data-theme-option="sea-glass">
+                  <input type="radio" name="colorTheme" value="sea-glass">
+                  <span class="theme-option-card">
+                    <span class="theme-preview" aria-hidden="true"></span>
+                    <span>
+                      <strong>Sea Glass</strong>
+                      <small>Mist, teal, and slate blue.</small>
+                    </span>
+                  </span>
+                </label>
+                <label class="theme-option" data-theme-option="heather">
+                  <input type="radio" name="colorTheme" value="heather">
+                  <span class="theme-option-card">
+                    <span class="theme-preview" aria-hidden="true"></span>
+                    <span>
+                      <strong>Heather</strong>
+                      <small>Dusty violet and soft plum.</small>
+                    </span>
+                  </span>
+                </label>
+                <label class="theme-option" data-theme-option="warm-sand">
+                  <input type="radio" name="colorTheme" value="warm-sand">
+                  <span class="theme-option-card">
+                    <span class="theme-preview" aria-hidden="true"></span>
+                    <span>
+                      <strong>Warm Sand</strong>
+                      <small>Oat, clay, and muted sage.</small>
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </fieldset>
+            <label class="setting-line appearance-motion">
+              <span>
+                <strong>Reminder overlay motion</strong>
+                <small>Animates reminders while they wait; the break itself stays still.</small>
+              </span>
+              <span class="switch">
+                <input id="reminderMotionEnabled" type="checkbox" checked>
+                <span aria-hidden="true"></span>
+              </span>
+            </label>
+          </section>
+
           <section class="settings-section" aria-labelledby="signalsHeading">
             <div class="settings-intro">
               <h3 id="signalsHeading">Signals</h3>
@@ -578,6 +628,25 @@
                 <span aria-hidden="true"></span>
               </span>
             </label>
+            <div class="volume-setting">
+              <label for="chimeVolume">
+                <strong>Chime volume</strong>
+                <small id="chimeVolumeHint">Previewed after you release the slider.</small>
+              </label>
+              <div class="volume-control">
+                <input
+                  class="chime-volume"
+                  id="chimeVolume"
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="5"
+                  value="75"
+                  aria-describedby="chimeVolumeHint chimeVolumeValue"
+                >
+                <output id="chimeVolumeValue" for="chimeVolume">75%</output>
+              </div>
+            </div>
           </section>
 
           <section class="settings-section data-section" aria-labelledby="dataHeading">
@@ -779,6 +848,7 @@
     </dialog>
 
     <dialog class="break-dialog" id="breakDialog" aria-labelledby="breakTitle">
+      <div class="reminder-ambient" aria-hidden="true"></div>
       <div class="break-shell">
         <header class="break-header">
           <span class="break-kicker" id="breakKicker">A quiet nudge</span>

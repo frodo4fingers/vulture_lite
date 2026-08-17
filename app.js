@@ -21,7 +21,44 @@ import {
 
 const STORAGE_KEY = "vulture-lite:state:v1";
 const LEADER_KEY = "vulture-lite:leader:v1";
-const STATE_VERSION = 2;
+const STATE_VERSION = 5;
+const DEFAULT_CHIME_VOLUME = 0.75;
+const CHIME_GAIN_AT_FULL_VOLUME = 0.1;
+const COLOR_THEME_IDS = ["forest", "sea-glass", "heather", "warm-sand"];
+const THEME_STATUS_COLORS = {
+  forest: {
+    calm: "#285848",
+    near: "#c4872f",
+    due: "#c85d49",
+    paused: "#7c827d",
+    "off-hours": "#527b91",
+    stopped: "#647169",
+  },
+  "sea-glass": {
+    calm: "#356d72",
+    near: "#b8813e",
+    due: "#bc6657",
+    paused: "#788485",
+    "off-hours": "#557a92",
+    stopped: "#617276",
+  },
+  heather: {
+    calm: "#6b5a78",
+    near: "#ad7c43",
+    due: "#ba6861",
+    paused: "#837d86",
+    "off-hours": "#687d9b",
+    stopped: "#716875",
+  },
+  "warm-sand": {
+    calm: "#7a6753",
+    near: "#b47e3f",
+    due: "#bd6756",
+    paused: "#857e76",
+    "off-hours": "#6c8092",
+    stopped: "#746a60",
+  },
+};
 const BUNDLE_WINDOW = 90 * SECOND;
 const REOPEN_RESET_AFTER = 15 * MINUTE;
 const LEADER_TTL = 10 * SECOND;
@@ -46,7 +83,6 @@ const refs = {
   nextDetail: byId("nextDetail"),
   countdown: byId("countdown"),
   countdownLabel: byId("countdownLabel"),
-  progressRing: byId("progressRing"),
   instrumentStatus: byId("instrumentStatus"),
   primaryAction: byId("primaryAction"),
   mobileQuickButton: byId("mobileQuickButton"),
@@ -70,6 +106,7 @@ const refs = {
   settingsSaved: byId("settingsSaved"),
   settingsNotificationStatus: byId("settingsNotificationStatus"),
   settingsNotificationButton: byId("settingsNotificationButton"),
+  chimeVolumeValue: byId("chimeVolumeValue"),
   exerciseList: byId("exerciseList"),
   breakKicker: byId("breakKicker"),
   breakTitle: byId("breakTitle"),
@@ -108,6 +145,8 @@ const settingInputs = {
   workEnd: byId("workEnd"),
   notificationsEnabled: byId("notificationsEnabled"),
   soundEnabled: byId("soundEnabled"),
+  chimeVolume: byId("chimeVolume"),
+  reminderMotionEnabled: byId("reminderMotionEnabled"),
 };
 
 function createDefaultState() {
@@ -133,6 +172,9 @@ function createDefaultState() {
     settings: {
       notificationsEnabled: true,
       soundEnabled: true,
+      chimeVolume: DEFAULT_CHIME_VOLUME,
+      reminderMotionEnabled: true,
+      colorTheme: "forest",
       schedule: {
         enabled: false,
         start: "09:00",
@@ -289,6 +331,21 @@ function normalizeState(value) {
         typeof sourceSettings.soundEnabled === "boolean"
           ? sourceSettings.soundEnabled
           : fallback.settings.soundEnabled,
+      chimeVolume: clampNumber(
+        sourceSettings.chimeVolume,
+        0,
+        1,
+        fallback.settings.chimeVolume,
+      ),
+      reminderMotionEnabled:
+        typeof sourceSettings.reminderMotionEnabled === "boolean"
+          ? sourceSettings.reminderMotionEnabled
+          : typeof sourceSettings.ambientMotionEnabled === "boolean"
+            ? sourceSettings.ambientMotionEnabled
+            : fallback.settings.reminderMotionEnabled,
+      colorTheme: COLOR_THEME_IDS.includes(sourceSettings.colorTheme)
+        ? sourceSettings.colorTheme
+        : fallback.settings.colorTheme,
       schedule: {
         enabled: Boolean(sourceSchedule.enabled),
         start:
@@ -619,6 +676,15 @@ async function playChime(preview = false) {
   if (!preview && !state.settings.soundEnabled) {
     return;
   }
+  const chimeVolume = clampNumber(
+    state.settings.chimeVolume,
+    0,
+    1,
+    DEFAULT_CHIME_VOLUME,
+  );
+  if (chimeVolume === 0) {
+    return;
+  }
   const AudioContext = globalThis.AudioContext ?? globalThis.webkitAudioContext;
   if (!AudioContext) {
     if (preview) {
@@ -632,9 +698,10 @@ async function playChime(preview = false) {
     await audioContext.resume();
     const start = audioContext.currentTime;
     const gain = audioContext.createGain();
+    const peakGain = CHIME_GAIN_AT_FULL_VOLUME * chimeVolume;
     gain.connect(audioContext.destination);
     gain.gain.setValueAtTime(0.0001, start);
-    gain.gain.exponentialRampToValueAtTime(0.075, start + 0.025);
+    gain.gain.exponentialRampToValueAtTime(peakGain, start + 0.025);
     gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.7);
 
     const first = audioContext.createOscillator();
@@ -1028,6 +1095,7 @@ function renderPromptContent(prompt) {
 function showPrompt(prompt) {
   currentPrompt = prompt;
   activeBreak = null;
+  syncReminderMotionState();
   renderPromptContent(prompt);
   openDialog(refs.breakDialog);
   renderAll();
@@ -1062,6 +1130,7 @@ function startBreak() {
   refs.breakTimerLabel.textContent = "remaining";
   refs.breakCloseButton.setAttribute("aria-label", "End break and close");
   persistState();
+  syncReminderMotionState();
   updateActiveBreak(now);
 }
 
@@ -1432,18 +1501,25 @@ function phaseFor(now, withinSchedule, next) {
 }
 
 function setFavicon(phase) {
-  const colors = {
-    calm: "#285848",
-    near: "#c4872f",
-    due: "#c85d49",
-    paused: "#7c827d",
-    "off-hours": "#527b91",
-    stopped: "#647169",
-  };
+  const colors =
+    THEME_STATUS_COLORS[state.settings.colorTheme] ??
+    THEME_STATUS_COLORS.forest;
   const color = colors[phase] ?? colors.calm;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="18" fill="${color}"/><path fill="#fbfaf5" d="M13 17h10l9 25 9-25h10L36.5 51h-9z"/></svg>`;
   refs.favicon.href = `data:image/svg+xml,${encodeURIComponent(svg)}`;
   refs.themeColor.content = color;
+}
+
+function syncReminderMotionState() {
+  const shouldAnimate =
+    state.settings.reminderMotionEnabled && currentPrompt && !activeBreak;
+  refs.breakDialog.dataset.motion = shouldAnimate ? "animated" : "static";
+}
+
+function syncPageVisibility() {
+  document.body.dataset.pageVisibility = document.hidden
+    ? "hidden"
+    : "visible";
 }
 
 function renderInstrument(now = Date.now()) {
@@ -1460,16 +1536,9 @@ function renderInstrument(now = Date.now()) {
   setFavicon(phase);
 
   refs.pauseButton.hidden = true;
-  refs.progressRing.setAttribute("stroke-dashoffset", "100");
 
   if (activeBreak && currentPrompt) {
     const remaining = Math.max(0, activeBreak.endAt - now);
-    const total = Math.max(1, currentPrompt.durationSeconds * SECOND);
-    const remainingRatio = Math.min(1, Math.max(0, remaining / total));
-    refs.progressRing.setAttribute(
-      "stroke-dashoffset",
-      String(100 - remainingRatio * 100),
-    );
     refs.stateEyebrow.textContent = "Taking a moment";
     refs.nextActivity.textContent = currentPrompt.title;
     refs.nextDetail.textContent =
@@ -1493,7 +1562,6 @@ function renderInstrument(now = Date.now()) {
     );
     return;
   }
-
   if (currentPrompt || promptQueue.length > 0) {
     refs.stateEyebrow.textContent = "A reminder is waiting";
     refs.nextActivity.textContent =
@@ -1587,12 +1655,6 @@ function renderInstrument(now = Date.now()) {
 
   const remaining = Math.max(0, next.dueAt - now);
   const activity = peekActivity(next.id);
-  const interval = next.reminder.intervalMinutes * MINUTE;
-  const remainingRatio = Math.min(1, Math.max(0, remaining / interval));
-  refs.progressRing.setAttribute(
-    "stroke-dashoffset",
-    String(100 - remainingRatio * 100),
-  );
   refs.stateEyebrow.textContent = `${REMINDER_DEFINITIONS[next.id].label} next`;
   refs.nextActivity.textContent = activity.title;
   refs.nextDetail.textContent = `${formatClock(
@@ -1764,6 +1826,8 @@ function renderHistory() {
 }
 
 function renderAll(now = Date.now()) {
+  document.documentElement.dataset.theme = state.settings.colorTheme;
+  syncReminderMotionState();
   renderInstrument(now);
   renderPlan(now);
   renderHistory();
@@ -1783,12 +1847,44 @@ function setCheckedValues(name, values) {
   }
 }
 
+function selectedColorTheme() {
+  return (
+    document.querySelector('input[name="colorTheme"]:checked')?.value ??
+    "forest"
+  );
+}
+
+function setSelectedColorTheme(theme) {
+  const input = document.querySelector(
+    `input[name="colorTheme"][value="${theme}"]`,
+  );
+  if (input) {
+    input.checked = true;
+  }
+}
+
+function renderChimeVolumeValue() {
+  const volume = Math.round(
+    clampNumber(
+      settingInputs.chimeVolume.value,
+      0,
+      100,
+      DEFAULT_CHIME_VOLUME * 100,
+    ),
+  );
+  refs.chimeVolumeValue.textContent = `${volume}%`;
+  settingInputs.chimeVolume.style.setProperty("--range-fill", `${volume}%`);
+}
+
 function populateSettingsForm() {
   const {
     reminders,
     schedule,
     notificationsEnabled,
     soundEnabled,
+    chimeVolume,
+    reminderMotionEnabled,
+    colorTheme,
   } = state.settings;
   settingInputs.eyesEnabled.checked = reminders.eyes.enabled;
   settingInputs.eyesInterval.value = reminders.eyes.intervalMinutes;
@@ -1813,6 +1909,10 @@ function populateSettingsForm() {
   settingInputs.workEnd.value = schedule.end;
   settingInputs.notificationsEnabled.checked = notificationsEnabled;
   settingInputs.soundEnabled.checked = soundEnabled;
+  settingInputs.chimeVolume.value = Math.round(chimeVolume * 100);
+  settingInputs.reminderMotionEnabled.checked = reminderMotionEnabled;
+  setSelectedColorTheme(colorTheme);
+  renderChimeVolumeValue();
 
   setCheckedValues(
     "eyesActivity",
@@ -1851,6 +1951,7 @@ function syncSettingsControls() {
   for (const input of document.querySelectorAll('input[name="workday"]')) {
     input.disabled = !scheduleEnabled;
   }
+  settingInputs.chimeVolume.disabled = !settingInputs.soundEnabled.checked;
 }
 
 function normalizeActivityChoice(name, fallback, label) {
@@ -1900,6 +2001,15 @@ function saveSettingsFromForm() {
   const nextSettings = {
     notificationsEnabled: settingInputs.notificationsEnabled.checked,
     soundEnabled: settingInputs.soundEnabled.checked,
+    chimeVolume:
+      clampNumber(
+        settingInputs.chimeVolume.value,
+        0,
+        100,
+        previousSettings.chimeVolume * 100,
+      ) / 100,
+    reminderMotionEnabled: settingInputs.reminderMotionEnabled.checked,
+    colorTheme: selectedColorTheme(),
     schedule: {
       enabled: settingInputs.scheduleEnabled.checked,
       start: settingInputs.workStart.value || "09:00",
@@ -1971,6 +2081,8 @@ function saveSettingsFromForm() {
     JSON.stringify(nextSettings.schedule);
   const notificationsWereEnabled = previousSettings.notificationsEnabled;
   const soundWasEnabled = previousSettings.soundEnabled;
+  const chimeVolumeChanged =
+    previousSettings.chimeVolume !== nextSettings.chimeVolume;
   state.settings = nextSettings;
   if (
     scheduleChanged &&
@@ -1989,7 +2101,10 @@ function saveSettingsFromForm() {
     refs.settingsSaved.textContent = "Saved on this device";
   }, 2_500);
 
-  if (!soundWasEnabled && nextSettings.soundEnabled) {
+  if (
+    nextSettings.soundEnabled &&
+    (!soundWasEnabled || chimeVolumeChanged)
+  ) {
     void playChime(true);
   }
   if (!notificationsWereEnabled && nextSettings.notificationsEnabled) {
@@ -2187,6 +2302,10 @@ function bindEvents() {
     });
   }
 
+  settingInputs.chimeVolume.addEventListener(
+    "input",
+    renderChimeVolumeValue,
+  );
   refs.settingsForm.addEventListener("change", saveSettingsFromForm);
   byId("exportButton").addEventListener("click", exportSettings);
   byId("settingsExportButton").addEventListener("click", exportSettings);
@@ -2233,7 +2352,10 @@ function bindEvents() {
     });
   }
 
-  document.addEventListener("visibilitychange", () => tick());
+  document.addEventListener("visibilitychange", () => {
+    syncPageVisibility();
+    tick();
+  });
   globalThis.addEventListener("focus", () => tick());
   globalThis.addEventListener("beforeunload", () => {
     state.runtime.lastHeartbeatAt = Date.now();
@@ -2318,6 +2440,7 @@ function tick(now = Date.now()) {
 function initialize() {
   const now = Date.now();
   ensureToday(new Date(now));
+  syncPageVisibility();
 
   const previousHeartbeat = state.runtime.lastHeartbeatAt;
   const reopenedAfterLongGap =
