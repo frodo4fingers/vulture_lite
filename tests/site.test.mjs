@@ -17,10 +17,44 @@ test("privacy and browser reliability limits are visible in the shell", async ()
   assert.match(html, /Keep this tab open/);
 });
 
-test("notifications and the gentle chime are the default start", async () => {
-  const [html, app] = await Promise.all([
+test("the timer stays static while the reminder overlay can move", async () => {
+  const [html, css, app] = await Promise.all([
+    readFile(new URL("index.html", root), "utf8"),
+    readFile(new URL("styles.css", root), "utf8"),
+    readFile(new URL("app.js", root), "utf8"),
+  ]);
+
+  assert.match(
+    html,
+    /<div class="reminder-ambient" aria-hidden="true"><\/div>/,
+  );
+  assert.doesNotMatch(html, /class="timer-ambient"/);
+  assert.equal(
+    html.match(/class="time-instrument"/g)?.length,
+    1,
+    "the timer actions must not become nested inside a duplicate clock wrapper",
+  );
+  assert.doesNotMatch(html, /class="progress-ring"/);
+  assert.doesNotMatch(app, /progressRing/);
+  assert.match(css, /@keyframes reminder-overlay-breathe/);
+  assert.match(css, /reminder-overlay-breathe 7s/);
+  assert.match(css, /reminder-overlay-drift 10s/);
+  assert.match(css, /translate3d\(-8%, 7%, 0\)/);
+  assert.match(css, /translate3d\(9%, -8%, 0\)/);
+  assert.match(css, /prefers-reduced-motion: reduce/);
+  assert.match(css, /\.reminder-ambient::before,\s*\.reminder-ambient::after \{\s*animation: none !important;/);
+  assert.match(
+    app,
+    /state\.settings\.reminderMotionEnabled && currentPrompt && !activeBreak/,
+  );
+  assert.match(app, /document\.body\.dataset\.pageVisibility/);
+});
+
+test("signals, volume, and reminder motion have calm defaults", async () => {
+  const [html, app, css] = await Promise.all([
     readFile(new URL("index.html", root), "utf8"),
     readFile(new URL("app.js", root), "utf8"),
+    readFile(new URL("styles.css", root), "utf8"),
   ]);
 
   assert.match(html, /Start with notifications and chime/);
@@ -29,13 +63,43 @@ test("notifications and the gentle chime are the default start", async () => {
     /id="notificationsEnabled" type="checkbox" checked/,
   );
   assert.match(html, /id="soundEnabled" type="checkbox" checked/);
+  assert.match(
+    html,
+    /id="chimeVolume"[\s\S]*type="range"[\s\S]*min="0"[\s\S]*max="100"[\s\S]*value="75"/,
+  );
+  assert.match(
+    html,
+    /id="reminderMotionEnabled" type="checkbox" checked/,
+  );
   assert.match(app, /notificationsEnabled: true/);
   assert.match(app, /soundEnabled: true/);
+  assert.match(app, /chimeVolume: DEFAULT_CHIME_VOLUME/);
+  assert.match(app, /reminderMotionEnabled: true/);
   assert.match(
     app,
     /typeof sourceSettings\.notificationsEnabled === "boolean"[\s\S]*fallback\.settings\.notificationsEnabled/,
   );
   assert.match(app, /!state\.settings\.notificationsEnabled \|\|/);
+  assert.match(
+    app,
+    /sourceSettings\.chimeVolume,\s*0,\s*1,\s*fallback\.settings\.chimeVolume/,
+  );
+  assert.match(
+    app,
+    /typeof sourceSettings\.reminderMotionEnabled === "boolean"[\s\S]*typeof sourceSettings\.ambientMotionEnabled === "boolean"/,
+  );
+  assert.match(
+    app,
+    /const peakGain = CHIME_GAIN_AT_FULL_VOLUME \* chimeVolume/,
+  );
+  assert.match(
+    css,
+    /\.break-dialog\[data-motion="animated"\] \.reminder-ambient::before/,
+  );
+  assert.match(
+    css,
+    /\.break-dialog\[data-motion="static"\]\[open\] \{\s*animation: none;/,
+  );
   assert.match(
     app,
     /if \(!state\.runtime\.running\) \{\s*void startRhythmWithSignals\(\);/,
@@ -47,6 +111,59 @@ test("notifications and the gentle chime are the default start", async () => {
   assert.match(
     app,
     /function startQuietly\(\) \{\s*state\.settings\.notificationsEnabled = false;\s*state\.settings\.soundEnabled = false;\s*startRhythm\(\);/,
+  );
+});
+
+test("four soothing color themes are selectable and persisted", async () => {
+  const [html, app, css] = await Promise.all([
+    readFile(new URL("index.html", root), "utf8"),
+    readFile(new URL("app.js", root), "utf8"),
+    readFile(new URL("styles.css", root), "utf8"),
+  ]);
+
+  for (const theme of ["forest", "sea-glass", "heather", "warm-sand"]) {
+    assert.match(
+      html,
+      new RegExp(`name="colorTheme" value="${theme}"`),
+    );
+  }
+  assert.match(html, />Sea Glass</);
+  assert.match(html, />Heather</);
+  assert.match(html, />Warm Sand</);
+  assert.match(app, /colorTheme: "forest"/);
+  assert.match(app, /COLOR_THEME_IDS\.includes\(sourceSettings\.colorTheme\)/);
+  assert.match(
+    app,
+    /document\.documentElement\.dataset\.theme = state\.settings\.colorTheme/,
+  );
+  for (const theme of ["sea-glass", "heather", "warm-sand"]) {
+    assert.match(css, new RegExp(`:root\\[data-theme="${theme}"\\]`));
+  }
+});
+
+test("typography keeps serif limited to two signature titles", async () => {
+  const css = await readFile(new URL("styles.css", root), "utf8");
+
+  assert.match(css, /--display: ui-serif, Georgia, serif/);
+  assert.match(
+    css,
+    /--ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif/,
+  );
+  assert.match(
+    css,
+    /h1,\s*h2,\s*h3 \{\s*font-family: var\(--ui\);/,
+  );
+  assert.match(
+    css,
+    /\.timer-heading h1 \{[\s\S]*font-family: var\(--display\);/,
+  );
+  assert.match(
+    css,
+    /\.break-copy h2 \{[\s\S]*font-family: var\(--display\);/,
+  );
+  assert.equal(
+    css.match(/font-family: var\(--display\);/g)?.length,
+    2,
   );
 });
 
