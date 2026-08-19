@@ -7,9 +7,11 @@ forest ink, one precise instrument, and small signal colors that change only
 when attention is useful. It is neither clinical wellness software nor a
 productivity game.
 
-The signature composition is a large circular time instrument paired with a
-compact vertical flight plan. The vulture mark is abstract and watchful rather
-than literal or ominous.
+The signature composition is a large, still timer pane paired with a compact
+vertical flight plan. A soft organic field appears only in the reminder
+overlay, where it can draw gentle attention without turning the clock into a
+quota ring. The vulture mark is abstract and watchful rather than literal or
+ominous.
 
 ## Voice
 
@@ -39,16 +41,25 @@ Light:
 Dark mode keeps the same semantic hierarchy with deep green-charcoal surfaces,
 warm off-white text, and desaturated signal colors.
 
+Four selectable palettes preserve the same hierarchy in both light and dark
+mode:
+
+- **Forest:** warm paper and deep green; the original palette.
+- **Sea Glass:** pale mist, muted teal, and slate blue.
+- **Heather:** dusty violet, soft plum, and restrained blue.
+- **Warm Sand:** oat, clay, muted sage, and warm charcoal.
+
 Color never carries status alone; every signal has text and an icon or shape.
 
 ## Typography
 
-Use local system fonts only. Headings use a soft editorial serif stack to make
-the product feel considered; controls and data use a highly legible UI sans
-stack. The countdown uses tabular numerals.
+Use local system fonts only. The operational interface uses one highly legible
+system sans stack. Serif is a deliberate signature accent reserved for the
+main timer statement and reminder title, never a default heading treatment.
+The countdown uses tabular numerals.
 
-- Display: `Iowan Old Style`, `Palatino Linotype`, `Book Antiqua`, Georgia
-- UI: `Inter`, `Avenir Next`, `Segoe UI`, Helvetica, Arial, sans-serif
+- Display: `ui-serif`, Georgia, serif; signature titles only
+- UI: `system-ui`, `-apple-system`, `BlinkMacSystemFont`, `Segoe UI`, sans-serif
 - Data: the UI stack with `font-variant-numeric: tabular-nums`
 
 ## Geometry and spacing
@@ -63,8 +74,8 @@ stack. The countdown uses tabular numerals.
 
 ## Components
 
-- **Time instrument:** large SVG progress ring, next activity, countdown, and
-  two actions. It is the dominant object on the page.
+- **Time instrument:** static timer pane, next activity, countdown, and two
+  actions. It is the dominant object on the page.
 - **Flight plan:** ordered reminder channels with a semantic marker, next due
   time, interval, and enabled state.
 - **Local day note:** a small textual summary and recent moments, without
@@ -74,17 +85,25 @@ stack. The countdown uses tabular numerals.
 - **Break library:** one filterable sheet presents every restorative break and
   guided movement without changing the four-channel reminder hierarchy.
 - **Side sheet:** settings and evidence use native dialogs styled as calm
-  sheets. Forms save automatically or with one clear close action.
+  sheets. Forms save automatically or with one clear close action. Chime
+  volume, color theme, and reminder-overlay motion remain explicitly
+  adjustable.
 - **Break stage:** a focused dialog that turns a due reminder into a short,
-  readable sequence with start, done, snooze, and skip actions.
+  readable sequence with start, done, snooze, and skip actions. Its organic
+  field moves only while the reminder awaits a choice, then becomes still when
+  the break starts.
 - **Toast:** reserved for persistence errors, browser limitations, and quiet
   confirmations.
 
 ## Motion
 
-- Progress updates continuously without decorative orbiting or bouncing.
-- A near-due state breathes once every few seconds; due state uses a restrained
-  border pulse.
+- The main timer pane remains static in every state.
+- The reminder overlay breathes slowly without orbiting or bouncing while it
+  waits for a choice.
+- Starting a break immediately freezes the overlay field so “Taking a moment”
+  remains visually still.
+- Reminder motion can be disabled independently and pauses while the page is
+  hidden.
 - Dialogs translate by no more than 12px.
 - All nonessential motion is removed for `prefers-reduced-motion`.
 

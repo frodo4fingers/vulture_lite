@@ -30,8 +30,9 @@ optimal for everyone.
    - a longer walk, drink, or guided movement every 90 minutes.
    Browser notifications and the gentle chime are the default start, with a
    quiet opt-out.
-2. The user can change every interval, duration, activity mix, workday, and
-   notification preference.
+2. The user can change every interval, duration, activity mix, workday,
+   notification preference, chime volume, soothing color theme, and
+   reminder-overlay motion preference.
 3. Eye, movement, water, and longer-reset signals keep their own repeating
    cadence while rotating through the selected activities inside each channel.
 4. Every activity is also available in one browsable break library.
